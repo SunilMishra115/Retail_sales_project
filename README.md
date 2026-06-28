@@ -1,211 +1,201 @@
-# Retail_sales_project
-##🛍️ Retail Sales Analysis – SQL Project (Complete Documentation)
+# 🛍️ Retail Sales Analysis using SQL
 
-##📌 Project Overview
-This project involves analyzing retail sales data using MySQL Workbench to extract business insights such as sales trends, customer behavior, category performance, and shift-wise order distribution.
+## 📌 Project Overview
 
-#📂 Dataset Details
-Total Records: 2000 rows (1987 imported due to missing/null values)
+This project analyzes a retail sales dataset using **MySQL** to answer real-world business questions and generate actionable insights. The analysis focuses on customer behavior, sales performance, product categories, and purchasing trends through SQL queries.
 
-Tools Used: MySQL Workbench, Python (pandas for data cleaning)
+The project also demonstrates handling real-world data quality issues such as missing values and data import errors before loading the dataset into MySQL.
 
-Key Columns: transactions_id (PK), sale_date, sale_time, customer_id, gender, age, category, quantiy, price_per_unit, cogs, total_sale
+---
 
-⚠️ Data Import Issues & Fixes
-Issue: Only 1987 out of 2000 rows were imported because MySQL’s strict mode rejected rows with null values in numeric columns (age, cogs, total_sale), empty strings, or non-convertible data. Also, the sale_date column required proper formatting (YYYY-MM-DD) for successful insertion.
+## 📊 Dataset Information
 
-Fix Applied: Missing values were handled using Python (pandas) before re-importing:
+* **Dataset:** Retail Sales
+* **Total Records:** 2,000
+* **Successfully Imported into MySQL:** 1,987
+* **Database:** MySQL
+* **Query Tool:** MySQL Workbench
+* **Data Cleaning:** Python (Pandas)
 
-age → filled with median
+### Dataset Columns
 
-cogs → filled with 0
+* transactions_id
+* sale_date
+* sale_time
+* customer_id
+* gender
+* age
+* category
+* quantity
+* price_per_unit
+* cogs
+* total_sale
 
-total_sale → filled with median
+---
 
-sale_date formatted as YYYY-MM-DD to avoid import errors.
+## 🛠️ Technologies Used
 
-🧹 Data Exploration (Setup Queries)
-sql
--- Total sales
-SELECT COUNT(*) FROM retail_sales;
+* SQL
+* MySQL
+* MySQL Workbench
+* Python
+* Pandas
+* Git
+* GitHub
 
--- Unique customers
-SELECT COUNT(DISTINCT customer_id) FROM retail_sales;
+---
 
--- Unique categories
-SELECT DISTINCT category FROM retail_sales;
-📊 Business Questions & SQL Queries
-Q1. Retrieve all sales made on 2022-11-05
+# 📁 Project Structure
 
-sql
-SELECT * FROM retail_sales WHERE sale_date = '2022-11-05';
-Q2. Clothing category sales with quantity ≥ 4 in Nov 2022
+```
+Retail_sales_project/
+│
+├── README.md
+├── retail_sales.sql
+├── data_cleaning.ipynb
+├── retail_sales_cleaned.csv
+└── insights.md
+```
 
-sql
-SELECT *
-FROM retail_sales
-WHERE category = 'Clothing'
-  AND DATE_FORMAT(sale_date, '%Y-%m') = '2022-11'
-  AND quantiy >= 4;
-Q3. Total sales per category
+---
 
-sql
-SELECT category, COUNT(*) AS No_of_orders, SUM(total_sale) AS Total_sales
-FROM retail_sales
-GROUP BY category;
-Q4. Average age of customers in Beauty category
+# ⚠️ Data Cleaning & Import Challenges
 
-sql
-SELECT category, ROUND(AVG(age), 2) AS Customer_average_age
-FROM retail_sales
-WHERE category = 'Beauty'
-GROUP BY category;
-Q5. Transactions with total_sale > 1000
+While importing the dataset into MySQL, only **1,987 out of 2,000** records were imported successfully.
 
-sql
-SELECT * FROM retail_sales WHERE total_sale > 1000;
-Q6. Total transactions by gender and category
+### Root Cause
 
-sql
-SELECT category, gender, COUNT(transactions_id) AS Total_number
-FROM retail_sales
-GROUP BY category, gender
-ORDER BY 1;
-Q7. Best selling month per year (based on avg sales)
+Several rows contained missing values in numeric columns such as:
 
-sql
-SELECT *
-FROM (
-    SELECT 
-        YEAR(sale_date) AS Yr,
-        MONTHNAME(sale_date) AS months,
-        ROUND(AVG(total_sale), 2) AS Avgerage_sales_month_wise,
-        RANK() OVER (PARTITION BY YEAR(sale_date) ORDER BY AVG(total_sale) DESC) AS rn
-    FROM retail_sales
-    GROUP BY 1, 2
-    ORDER BY 1, 3
-) t
-WHERE rn = 1;
-Q8. Top 5 customers by highest total sales
+* age
+* cogs
+* total_sale
 
-sql
-SELECT *
-FROM (
-    SELECT customer_id, SUM(total_sale) AS Highest_Sales,
-           RANK() OVER (ORDER BY SUM(total_sale) DESC) AS rn
-    FROM retail_sales
-    GROUP BY 1
-) t
-WHERE rn <= 5;
-Q9. Unique customers per category
+MySQL Workbench rejected these rows during import because the values could not be converted into numeric data types under strict validation.
 
-sql
-SELECT COUNT(DISTINCT customer_id) AS total_count, category
-FROM retail_sales
-GROUP BY category;
-Bonus – Customers who purchased from all 3 categories:
+### Data Cleaning Performed
 
-sql
-SELECT COUNT(*)
-FROM (
-    SELECT customer_id
-    FROM retail_sales
-    GROUP BY customer_id
-    HAVING COUNT(DISTINCT category) = 3
-) t;
-Q10. Shift-wise order distribution
+Python (Pandas) was used to inspect missing values.
 
-sql
-SELECT
-    CASE
-        WHEN HOUR(sale_time) < 12 THEN 'Morning'
-        WHEN HOUR(sale_time) BETWEEN 12 AND 17 THEN 'Afternoon'
-        ELSE 'Evening'
-    END AS Shift,
-    COUNT(*) AS Total_Order_Count
-FROM retail_sales
-GROUP BY 1
-ORDER BY 2 DESC;
-📈 Key Findings Report
-1. Category Performance
-Electronics generates the highest total sales, followed by Clothing and Beauty.
+Examples:
 
-Clothing has the highest number of orders, indicating high volume but lower average transaction value.
+* Checked missing values using `isna().sum()`
+* Verified duplicate transaction IDs
+* Cleaned invalid numeric values
+* Corrected date formatting
+* Re-imported the cleaned dataset
 
-Beauty has the lowest sales volume but attracts a slightly older customer base (avg age ~40+).
+This demonstrates a practical ETL (Extract–Transform–Load) workflow commonly used in real-world analytics projects.
 
-2. Customer Insights
-Top 5 customers contribute significantly to overall revenue – these are ideal targets for loyalty programs.
+---
 
-A small group of customers purchased from all 3 categories, indicating cross-category shopping behavior.
+# 📈 Business Questions Solved
 
-3. Seasonal Trends
-The best-selling month varies by year, but November and December consistently show peak sales (holiday season effect).
+The project answers several business questions using SQL.
 
-Sales dip in Q1 (January–March), suggesting a post-holiday slowdown.
+### 1. Retrieve all sales made on a specific date.
 
-4. Shift-Wise Order Analysis
-Afternoon (12 PM – 5 PM) has the highest number of orders, making it the busiest shift.
+### 2. Find Clothing sales with quantity greater than or equal to 4 during November 2022.
 
-Morning and Evening shifts have relatively lower order volumes – potential for targeted promotions during these hours.
+### 3. Calculate total sales for each product category.
 
-5. Gender & Category Preferences
-Electronics is more popular among male customers.
+### 4. Find the average customer age for Beauty products.
 
-Beauty and Clothing categories show higher engagement from female customers.
+### 5. Retrieve transactions where total sales exceeded 1000.
 
-This insight can be used for gender-based marketing campaigns.
+### 6. Count transactions by gender and category.
 
-🧠 Conclusion
-This analysis provides actionable insights for business decision-making:
+### 7. Identify the best-selling month of each year using window functions.
 
-Inventory Planning: Focus on high-performing categories like Electronics and Clothing.
+### 8. Find the Top 5 customers based on total sales.
 
-Marketing Strategy: Target top customers with exclusive offers; run gender-specific campaigns.
+### 9. Count unique customers for each category.
 
-Operational Efficiency: Optimize staffing during afternoon shifts to handle peak order volume.
+### 10. Analyze order distribution by Morning, Afternoon, and Evening shifts.
 
-Promotional Timing: Run campaigns during slow months (Q1) to boost sales.
+### Bonus
 
-🚀 How to Use This Project / Report
-For Recruiters / Hiring Managers:
+Find customers who purchased from all three product categories.
+
+---
+
+# 💡 Key SQL Concepts Used
+
+* SELECT
+* WHERE
+* GROUP BY
+* ORDER BY
+* Aggregate Functions
+* CASE WHEN
+* Subqueries
+* Window Functions
+* RANK()
+* Common Business KPIs
+
+---
+
+# 📊 Key Business Insights
+
+### 📦 Category Performance
+
+* Electronics generated the highest revenue.
+* Clothing recorded the highest number of transactions.
+* Beauty products showed comparatively lower sales volume.
+
+### 👥 Customer Analysis
+
+* Top 5 customers contributed a significant share of total revenue.
+* A small group of customers purchased across all three categories.
+
+### 📅 Sales Trends
+
+* November and December recorded the strongest sales performance.
+* Sales declined during the first quarter of the year.
+
+### ⏰ Shift Analysis
+
+* Afternoon was the busiest sales period.
+* Morning and Evening shifts had comparatively fewer transactions.
+
+### 👨‍👩‍👧 Customer Preferences
+
+* Electronics purchases were more common among male customers.
+* Beauty and Clothing categories attracted more female customers.
+
+---
+
+# 🎯 Learning Outcomes
+
 This project demonstrates my ability to:
 
-Write complex SQL queries (window functions, subqueries, CTEs)
+* Write intermediate and advanced SQL queries
+* Use aggregate functions and window functions
+* Perform customer and sales analysis
+* Handle real-world data quality issues
+* Clean datasets using Python (Pandas)
+* Import data into MySQL
+* Generate business insights from raw transactional data
 
-Handle real-world data issues (null values, import errors)
+---
 
-Extract business insights from raw data
+# 🚀 Future Improvements
 
-Present findings in a clear, structured format
+* Build an interactive Power BI dashboard
+* Develop Tableau visualizations
+* Create stored procedures
+* Add SQL views for reporting
+* Automate ETL using Python
 
-For Other Data Analysts / Learners:
-Clone the repo and run the queries on your own MySQL Workbench.
+---
 
-Modify the queries to explore additional questions or datasets.
+# 👨‍💻 Author
 
-Use the findings as a template for your own retail or e-commerce analysis projects.
+**Sunil Mishra**
 
-For Business Stakeholders:
-Use the findings to inform inventory, marketing, and operations strategies.
+MS in Data Science
 
-The SQL queries can be adapted into automated dashboards or reporting pipelines.
+Aspiring Data Analyst | SQL | Python | Excel | Tableau | Power BI
 
-🧰 Tools & Technologies
-Database: MySQL
+---
 
-Query Tool: MySQL Workbench
-
-Data Cleaning: Python (pandas)
-
-Version Control: Git & GitHub
-
-📁 Project Structure
-text
-📦 retail-sales-analysis
-├── 📄 README.md
-├── 📄 retail_sales.sql
-├── 📄 data_cleaning.ipynb
-├── 📄 insights.md
-└── 📂 data/
-    └── retail_sales_cleaned.csv
+⭐ If you found this project useful, feel free to star the repository and connect with me.
