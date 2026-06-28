@@ -52,7 +52,6 @@ Retail_sales_project/
 │
 ├── README.md
 ├── retail_sales.sql
-├── data_cleaning.ipynb
 ├── retail_sales_cleaned.csv
 └── insights.md
 ```
