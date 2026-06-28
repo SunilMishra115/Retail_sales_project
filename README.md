@@ -1,9 +1,10 @@
 # Retail_sales_project
-#🛍️ Retail Sales Analysis – SQL Project (Complete Documentation)
-📌 Project Overview
+##🛍️ Retail Sales Analysis – SQL Project (Complete Documentation)
+
+##📌 Project Overview
 This project involves analyzing retail sales data using MySQL Workbench to extract business insights such as sales trends, customer behavior, category performance, and shift-wise order distribution.
 
-📂 Dataset Details
+#📂 Dataset Details
 Total Records: 2000 rows (1987 imported due to missing/null values)
 
 Tools Used: MySQL Workbench, Python (pandas for data cleaning)
