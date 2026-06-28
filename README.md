@@ -51,7 +51,7 @@ The project also demonstrates handling real-world data quality issues such as mi
 Retail_sales_project/
 │
 ├── README.md
-├── retail_sales.sql
+├── sql_query_p1.sql
 ├── retail_sales_cleaned.csv
 └── insights.md
 ```
