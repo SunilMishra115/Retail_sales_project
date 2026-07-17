@@ -193,7 +193,7 @@ This project demonstrates my ability to:
 
 MS in Data Science
 
-Aspiring Data Analyst | SQL | Python | Excel | Tableau | Power BI
+Data Analyst | SQL | Python | Excel | Tableau | Power BI
 
 ---
 
